@@ -38,13 +38,14 @@ The CSV should have the following columns:
 - year: Lunar year of birth
 - month: Lunar month of birth
 - day: Lunar day of birth
+- is_lunar: Whether the birthday is lunar or not
 
 Example:
 
 ```text
-name,year,month,day
-John Doe,1990,8,15
-Jane Smith,1985,2,10
+name,year,month,day,is_lunar
+John Doe,1990,8,15,1
+Jane Smith,1985,2,10,0
 ```
 
 ### Run the script
@@ -68,17 +69,17 @@ Replace `<input_csv>` with the path to your input CSV file and `<output_ics>` wi
 - Generate a single ICS file for the default 50 years, starting from the current year:
 
 ```shell
-python lunar_birthdays.py birthdays.csv lunar-birthdays
+python lunar_birthdays.py example.csv lunar-birthdays
 ```
 
 - Generate ICS files for 100 years, starting from 2025, with each file covering 50 years:
 
 ```shell
-python lunar_birthdays.py birthdays.csv lunar-birthdays --years 100 --start-year 2025
+python lunar_birthdays.py example.csv lunar-birthdays --years 100 --start-year 2025
 ```
 
 - Generate ICS files from the year 2000 to 2049, with each file covering 10 years:
 
 ```shell
-python lunar_birthdays.py birthdays.csv lunar-birthdays --years 50 --start-year 2000 --batch-size 10
+python lunar_birthdays.py example.csv lunar-birthdays --years 50 --start-year 2000 --batch-size 10
 ```
