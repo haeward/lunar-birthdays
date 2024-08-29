@@ -30,7 +30,9 @@ pip install -r requirements.txt
 
 ## Usage
 
-Prepare a CSV file with lunar birthday information. The CSV should have the following columns:
+### Prepare a CSV file with lunar birthday information
+
+The CSV should have the following columns:
 
 - name: Person's name
 - year: Lunar year of birth
@@ -45,20 +47,38 @@ John Doe,1990,8,15
 Jane Smith,1985,2,10
 ```
 
-Run the script:
+### Run the script
 
 ```shell
-python main.py <input_csv> <output_ics>
+python lunar_birthdays.py <input_csv> <output_ics> [--years YEARS] [--start-year START_YEAR] [--batch-size BATCH_SIZE]
 ```
 
-Replace `<input_csv>` with the path to your input CSV file and `<output_ics>` with the desired output path for the ICS file.
+#### Parameters
 
-Import the generated ICS file into Google Calendar.
+- `<input_csv>`: Required. The path to the input CSV file containing lunar birthday information.
+- `<output_ics_prefix>`: Required. The prefix name for the output ICS file. The generated ICS files will be named based on this prefix and the corresponding year range.
+- `--years YEARS`: Optional. The number of years for which to generate events. The default is 50 years.
+- `--start-year START_YEAR`: Optional. The starting year for generating events. The default is the current year.
+- `--batch-size BATCH_SIZE`: Optional. The number of years included in each ICS file. The default is 50 years. If the years parameter exceeds the batch-size, multiple ICS files will be generated.
 
-Example:
+Replace `<input_csv>` with the path to your input CSV file and `<output_ics>` with the desired output path for the ICS file. Finally, import the generated ICS file into Google Calendar.
+
+#### Example Usage
+
+- Generate a single ICS file for the default 50 years, starting from the current year:
 
 ```shell
-python main.py example.csv example.ics
+python lunar_birthdays.py birthdays.csv lunar-birthdays
 ```
 
-This command will read lunar birthdays from `example.csv` and generate an ICS file named `example.ics`.
+- Generate ICS files for 100 years, starting from 2025, with each file covering 50 years:
+
+```shell
+python lunar_birthdays.py birthdays.csv lunar-birthdays --years 100 --start-year 2025
+```
+
+- Generate ICS files from the year 2000 to 2049, with each file covering 10 years:
+
+```shell
+python lunar_birthdays.py birthdays.csv lunar-birthdays --years 50 --start-year 2000 --batch-size 10
+```
