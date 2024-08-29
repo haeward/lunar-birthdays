@@ -4,7 +4,7 @@ import sys
 from typing import Dict, List, TypedDict, cast
 
 from icalendar import Calendar, Event
-from lunarcalendar import Converter, Lunar, DateNotExist
+from lunarcalendar import Converter, Lunar, DateNotExist, Solar
 from datetime import datetime, timedelta
 
 
@@ -20,6 +20,7 @@ class BirthdayRow(TypedDict):
         year (str): The lunar year of birth, stored as a string to preserve leading zeros.
         month (str): The lunar month of birth, stored as a string (1-12 or 01-12).
         day (str): The lunar day of birth, stored as a string (1-31 or 01-31).
+        is_lunar (bool): Whether the birthday is lunar or not.
 
     Note:
         Although year, month, and day are typically numeric values, they are defined
@@ -30,6 +31,7 @@ class BirthdayRow(TypedDict):
     year: str
     month: str
     day: str
+    is_lunar: bool
 
 
 def read_lunar_birthdays(file_path: str) -> List[Dict[str, int | str]]:
@@ -53,6 +55,7 @@ def read_lunar_birthdays(file_path: str) -> List[Dict[str, int | str]]:
                     'year': int(birthday_row['year']),
                     'month': int(birthday_row['month']),
                     'day': int(birthday_row['day']),
+                    'is_lunar': int(birthday_row['is_lunar']),
                 })
     except FileNotFoundError:
         print(f"Error: File '{file_path}' not found.")
@@ -75,8 +78,11 @@ def create_birthday_event(birthday: Dict[str, int | str], year: int) -> Event:
         Event: iCalendar event object.
     """
     # Convert lunar date to solar date
-    lunar_date = Lunar(year, birthday['month'], birthday['day'], isleap=False)
-    solar_date = Converter.Lunar2Solar(lunar_date)
+    if birthday['is_lunar']:
+        lunar_date = Lunar(year, birthday['month'], birthday['day'], isleap=False)
+        solar_date = Converter.Lunar2Solar(lunar_date)
+    else:
+        solar_date = Solar(year, birthday['month'], birthday['day'])
 
     # Create a new event for the birthday
     event = Event()
@@ -123,7 +129,7 @@ def main():
     parser = argparse.ArgumentParser(description="Generate ICS files for lunar birthdays.")
     parser.add_argument('input_csv', help="Path to the input CSV file containing lunar birthdays.")
     parser.add_argument('output_ics_prefix', help="Prefix for the output ICS files.")
-    parser.add_argument('--years', type=int, default=50,help="Number of years to generate (default: 50).")
+    parser.add_argument('--years', type=int, default=50, help="Number of years to generate (default: 50).")
     parser.add_argument('--start-year', type=int, default=current_year,
                         help="Start year for generating events (default: current year).")
     parser.add_argument('--batch-size', type=int, default=50, help="Number of years per ICS file (default: 50).")
